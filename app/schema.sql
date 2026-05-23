@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    monthly_limit REAL NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS expenses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL,
+    amount REAL NOT NULL,
+    category_id INTEGER NOT NULL,
+    note TEXT,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);

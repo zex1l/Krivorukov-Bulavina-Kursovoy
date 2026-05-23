@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="card" style="margin-bottom: 16px;">
+    <form method="get" action="{{ url_for('index') }}" style="display: grid; grid-template-columns: repeat(3, minmax(140px, 1fr)); gap: 12px; align-items: end;">
+      <label>
+        Месяц
+        <select name="month">
+          {% for m in range(1, 13) %}
+            <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ "%02d" | format(m) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Год
+        <select name="year">
+          {% for y in range(year - 2, year + 3) %}
+            <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Показать</button>
+    </form>
+  </div>
+
+  <div class="metric-list">
+    <div class="metric">
+      <div class="metric-title">Месяц</div>
+      <div class="metric-value">{{ month }}/{{ year }}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-title">Всего потрачено</div>
+      <div class="metric-value">{{ "%.2f" | format(total) }} ₽</div>
+    </div>
+    <div class="metric">
+      <div class="metric-title">Категорий</div>
+      <div class="metric-value">{{ categories | length }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Добавить расход</h2>
+    <form action="{{ url_for('add_expense') }}" method="post">
+      <label for="amount">Сумма</label>
+      <input id="amount" name="amount" type="number" step="0.01" min="0" required placeholder="Например, 450.50" />
+
+      <label for="category_id">Категория</label>
+      <select id="category_id" name="category_id">
+        {% for category in categories %}
+          <option value="{{ category['id'] }}">{{ category['name'] }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="note">Комментарий</label>
+      <textarea id="note" name="note" rows="2" placeholder="Например, кофе утром"></textarea>
+
+      <label for="date">Дата и время</label>
+      <input id="date" name="date" type="datetime-local" />
+
+      <button type="submit">Сохранить расход</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Ежемесячный отчёт — {{ month }} / {{ year }}</h2>
+    {% if alerts %}
+      {% for message in alerts %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Категория</th>
+          <th>Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category, sum_value in report.items() %}
+          <tr>
+            <td>{{ category }}</td>
+            <td>{{ "%.2f" | format(sum_value) }} ₽</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Итого</th>
+          <th>{{ "%.2f" | format(total) }} ₽</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Последние расходы</h2>
+    {% if expenses %}
+      <table>
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th>Комментарий</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+            <tr>
+              <td>{{ expense['date'] | format_date }}</td>
+              <td><span class="badge">{{ expense['category'] }}</span></td>
+              <td>{{ "%.2f" | format(expense['amount']) }} ₽</td>
+              <td>{{ expense['note'] }}</td>
+              <td><a href="{{ url_for('edit_expense', expense_id=expense['id']) }}" class="nav-link">Редактировать</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Расходов ещё нет. Добавьте первую запись.</p>
+    {% endif %}
+  </div>
+{% endblock %}

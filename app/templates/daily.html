@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="card" style="margin-bottom: 16px;">
+    <form method="get" action="{{ url_for('daily_page') }}" style="display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 12px; align-items: end;">
+      <label>
+        День
+        <select name="day">
+          {% for d in range(1, 32) %}
+            <option value="{{ d }}" {% if d == day %}selected{% endif %}>{{ "%02d" | format(d) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Месяц
+        <select name="month">
+          {% for m in range(1, 13) %}
+            <option value="{{ m }}" {% if m == month %}selected{% endif %}>{{ "%02d" | format(m) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Год
+        <select name="year">
+          {% for y in range(year - 2, year + 3) %}
+            <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Показать</button>
+    </form>
+  </div>
+
+  <div class="metric-list">
+    <div class="metric">
+      <div class="metric-title">Дата</div>
+      <div class="metric-value">{{ "%02d" | format(day) }}.{{ "%02d" | format(month) }}.{{ year }}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-title">Итого за день</div>
+      <div class="metric-value">{{ "%.2f" | format(total) }} ₽</div>
+    </div>
+    <div class="metric">
+      <div class="metric-title">Категорий</div>
+      <div class="metric-value">{{ categories | length }}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Расходы за {{ "%02d" | format(day) }}.{{ "%02d" | format(month) }}.{{ year }}</h2>
+    {% if expenses %}
+      <table>
+        <thead>
+          <tr>
+            <th>Время</th>
+            <th>Категория</th>
+            <th>Сумма</th>
+            <th>Комментарий</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for expense in expenses %}
+            <tr>
+              <td>{{ expense['date'] | format_date }}</td>
+              <td><span class="badge">{{ expense['category'] }}</span></td>
+              <td>{{ "%.2f" | format(expense['amount']) }} ₽</td>
+              <td>{{ expense['note'] }}</td>
+              <td><a href="{{ url_for('edit_expense', expense_id=expense['id']) }}" class="nav-link">Редактировать</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>За выбранный день расходов нет.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Разбивка по категориям</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Категория</th>
+          <th>Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category, sum_value in report.items() %}
+          <tr>
+            <td>{{ category }}</td>
+            <td>{{ "%.2f" | format(sum_value) }} ₽</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Итого</th>
+          <th>{{ "%.2f" | format(total) }} ₽</th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+{% endblock %}
