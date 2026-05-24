@@ -40,7 +40,6 @@ cursovoy/
 ├── run.bat               # скрипт запуска (Windows)
 ├── run.sh                # скрипт запуска (Unix)
 ├── README.md             # этот файл
-├── architecture.md       # описание архитектуры
 ├── expenses.db           # база данных (создаётся при первом запуске)
 └── templates/
     ├── layout.html       # базовый шаблон
