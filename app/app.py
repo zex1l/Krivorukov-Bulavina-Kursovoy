@@ -52,7 +52,7 @@ def close_db(e=None):
 def init_db():
     db = sqlite3.connect(app.config["DATABASE"])
     db.row_factory = sqlite3.Row
-    with app.open_resource("schema.sql", mode="r", encoding="utf-8") as f:
+    with app.open_resource("database.sql", mode="r", encoding="utf-8") as f:
         db.executescript(f.read())
     db.commit()
     db.close()

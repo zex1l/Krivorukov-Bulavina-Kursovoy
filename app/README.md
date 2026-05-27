@@ -35,7 +35,7 @@ python app.py
 ```
 cursovoy/
 ├── app.py                 # основной код Flask
-├── schema.sql             # структура базы данных
+├── database.sql             # структура базы данных
 ├── requirements.txt       # зависимости
 ├── run.bat               # скрипт запуска (Windows)
 ├── run.sh                # скрипт запуска (Unix)
